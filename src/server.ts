@@ -44,9 +44,9 @@ getFilesWithKeyword("router", __dirname + "/app").forEach((file: string) => {
 app.use(
   (
     err: Error,
-    req: express.Request,
+    _req: express.Request,
     res: express.Response,
-    next: express.NextFunction
+    _next: express.NextFunction
   ) => {
     return res.status(500).json({
       errorName: err.name,

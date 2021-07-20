@@ -39,7 +39,7 @@ export const loginController = async (req: Request, res: Response) => {
     const authingUser = await userModel.findOne({ email: userEmail });
 
     if (compareSync(userPassword, authingUser.password)) {
-      const token = sign({ email: userEmail }, `${env.tokenSecret}`, {
+      const token = sign({ email: userEmail }, env.tokenSecret, {
         expiresIn: 60 * 60,
         algorithm: "HS384",
       });
