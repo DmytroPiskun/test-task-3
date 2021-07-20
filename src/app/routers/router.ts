@@ -1,5 +1,5 @@
 import { Router } from "express";
-import passport from "passport";
+import { isAuth } from "../middleware/isAuth";
 import {
   defaultController,
   testController,
@@ -11,10 +11,6 @@ import {
 // Export module for registering router in express app
 export const router: Router = Router();
 
-const isAuth = passport.authenticate("jwt", {
-  session: false,
-  failureRedirect: "/",
-});
 // Define your routes here
 router.get("/", defaultController);
 router.post("/registration", registationController);
