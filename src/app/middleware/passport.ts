@@ -1,11 +1,8 @@
 import { Strategy } from "passport-jwt";
 import userModel from "../models/userModel";
 const tokenExtractor = function (req: any) {
-  if (req && req.cookies) {
-    const token = req.cookies["accessToken"];
-    return token;
-  }
-  return null;
+  const token = req.headers["bearer"];
+  return token;
 };
 const opts = {
   secretOrKey: `${process.env.TOKEN_SECRET}`,

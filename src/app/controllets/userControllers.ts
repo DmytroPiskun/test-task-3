@@ -6,11 +6,11 @@ import { sign } from "jsonwebtoken";
 import { env } from "../../utils/env/env";
 export const registationController = async (req: Request, res: Response) => {
   if (
-    typeof req.query.password === "string" &&
-    typeof req.query.email === "string"
+    typeof req.body.password === "string" &&
+    typeof req.body.email === "string"
   ) {
-    const userEmail = req.query.email;
-    const userPassword = req.query.password;
+    const userEmail = req.body.email;
+    const userPassword = req.body.password;
     if (typeof userPassword != "undefined") {
       const salt = genSaltSync(10);
       const hash = hashSync(userPassword, salt);
@@ -31,11 +31,11 @@ export const registationController = async (req: Request, res: Response) => {
 
 export const loginController = async (req: Request, res: Response) => {
   if (
-    typeof req.query.password === "string" &&
-    typeof req.query.email === "string"
+    typeof req.body.password === "string" &&
+    typeof req.body.email === "string"
   ) {
-    const userEmail = req.query.email;
-    const userPassword = req.query.password;
+    const userEmail = req.body.email;
+    const userPassword = req.body.password;
     const authingUser = await userModel.findOne({ email: userEmail });
 
     if (compareSync(userPassword, authingUser.password)) {
@@ -43,8 +43,7 @@ export const loginController = async (req: Request, res: Response) => {
         expiresIn: 60 * 60,
         algorithm: "HS384",
       });
-      res.cookie("accessToken", token);
-      res.status(200).send("good");
+      res.status(200).json({ accessToken: token });
     } else {
       res.status(401).send("Unauthorized");
     }
