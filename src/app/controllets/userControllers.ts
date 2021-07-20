@@ -2,8 +2,8 @@ import { Request, Response } from "express";
 import userModel from "../models/userModel";
 import { usersRepository } from "../repositories";
 import { compareSync, genSaltSync, hashSync } from "bcrypt";
-import { sign, verify } from "jsonwebtoken";
-
+import { sign } from "jsonwebtoken";
+import { env } from "../../utils/env/env";
 export const registationController = async (req: Request, res: Response) => {
   if (
     typeof req.query.password === "string" &&
@@ -39,7 +39,7 @@ export const loginController = async (req: Request, res: Response) => {
     const authingUser = await userModel.findOne({ email: userEmail });
 
     if (compareSync(userPassword, authingUser.password)) {
-      const token = sign({ email: userEmail }, "key", {
+      const token = sign({ email: userEmail }, `${env.tokenSecret}`, {
         expiresIn: 60 * 60,
         algorithm: "HS384",
       });
