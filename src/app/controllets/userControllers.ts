@@ -5,7 +5,7 @@ import { compareSync, genSaltSync, hashSync } from "bcrypt";
 import { generateToken } from "../../utils/generateToken";
 import { JwtPayload, sign, verify } from "jsonwebtoken";
 import { env } from "../../utils/env/env";
-import { IUser } from "../interfaces";
+
 export const registationController = async (req: Request, res: Response) => {
   const userEmail = req.body.email;
   const userPassword = req.body.password;
