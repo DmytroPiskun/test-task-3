@@ -1,11 +1,18 @@
 import { Strategy } from "passport-jwt";
+import { env } from "../../utils/env/env";
 import userModel from "../models/userModel";
 const tokenExtractor = function (req: any) {
-  const token = req.headers["bearer"];
-  return token;
+  try {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader.split(" ")[1];
+    return token;
+  } catch {
+    const token = "ivalid";
+    return token;
+  }
 };
 const opts = {
-  secretOrKey: `${process.env.TOKEN_SECRET}`,
+  secretOrKey: env.tokenSecret,
   jwtFromRequest: tokenExtractor,
 };
 
@@ -14,11 +21,7 @@ module.exports = (passport: { use: (arg0: Strategy) => void }) => {
     new Strategy(opts, async (payload, done) => {
       try {
         const user = await userModel.findOne({ email: payload.email });
-        if (user) {
-          return done(null, user);
-        } else {
-          return done(null, false);
-        }
+        return done(null, user || false);
       } catch (e) {
         console.log(e);
       }
