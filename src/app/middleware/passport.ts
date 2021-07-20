@@ -2,8 +2,14 @@ import { Strategy } from "passport-jwt";
 import { env } from "../../utils/env/env";
 import userModel from "../models/userModel";
 const tokenExtractor = function (req: any) {
-  const token = req.headers["bearer"];
-  return token;
+  try {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader.split(" ")[1];
+    return token;
+  } catch {
+    const token = "ivalid";
+    return token;
+  }
 };
 const opts = {
   secretOrKey: env.tokenSecret,
