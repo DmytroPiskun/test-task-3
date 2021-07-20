@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { isValidData } from "../middleware/isValidUserData";
 import { isAuth } from "../middleware/isAuth";
 import {
   defaultController,
