@@ -3,6 +3,8 @@ import userModel from "../models/userModel";
 import { usersRepository } from "../repositories";
 import { compareSync, genSaltSync, hashSync } from "bcrypt";
 import { generateToken } from "../../utils/generateToken";
+import { JwtPayload, sign, verify } from "jsonwebtoken";
+import { env } from "../../utils/env/env";
 export const registationController = async (req: Request, res: Response) => {
   const userEmail = req.body.email;
   const userPassword = req.body.password;
@@ -26,5 +28,16 @@ export const loginController = async (req: Request, res: Response) => {
     res.status(200).json({ accessToken: token });
   } else {
     res.status(401).json({ message: "unauthorized" });
+  }
+};
+
+export const deleteAccountContoller = async (req: Request, res: Response) => {
+  if (typeof req.headers["authorization"] !== "undefined") {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader.split(" ")[1];
+    const verifiedToken = verify(token, env.tokenSecret) as JwtPayload;
+    const userEmail = verifiedToken.email;
+    await userModel.deleteOne(await userModel.findOne({ email: userEmail }));
+    res.status(200).json(token);
   }
 };
