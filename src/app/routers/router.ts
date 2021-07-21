@@ -7,7 +7,9 @@ import {
   testValidController,
 } from "../controllets/baseControllers";
 import {
+  changePasswordController,
   deleteAccountContoller,
+  getUsersList,
   loginController,
   registationController,
 } from "../controllets/userControllers";
@@ -19,9 +21,9 @@ router.get("/", defaultController);
 router.post("/registration", isValidData, registationController);
 router.post("/login", isValidData, loginController);
 
-router.post("/registration", registationController);
-router.post("/login", loginController);
+router.get("/allusers", getUsersList);
 router.post("/delete-account", isAuth, deleteAccountContoller);
+router.post("/changepassword", isAuth, changePasswordController);
 
 router.get("/testpass", isAuth, testController);
 router.get("/testvalid", isValidData, testValidController);
