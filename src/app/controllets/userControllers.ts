@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import userModel from "../models/userModel";
 import { usersRepository } from "../repositories";
 import { compareSync, genSaltSync, hashSync } from "bcrypt";
-import { generateToken } from "../../utils/generateToken";
 import { JwtPayload, sign, verify } from "jsonwebtoken";
 import { env } from "../../utils/env/env";
 
@@ -46,5 +45,16 @@ export const loginController = async (req: Request, res: Response) => {
     }
   } else {
     res.status(400).json({ message: "error" });
+  }
+};
+
+export const deleteAccountContoller = async (req: Request, res: Response) => {
+  if (typeof req.headers["authorization"] !== "undefined") {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader.split(" ")[1];
+    const verifiedToken = verify(token, env.tokenSecret) as JwtPayload;
+    const userEmail = verifiedToken.email;
+    await userModel.deleteOne(await userModel.findOne({ email: userEmail }));
+    res.status(200).json(token);
   }
 };
