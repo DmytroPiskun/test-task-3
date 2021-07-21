@@ -33,8 +33,8 @@ export const loginController = async (req: Request, res: Response) => {
 };
 
 export const deleteAccountContoller = async (req: Request, res: Response) => {
-  const user = req.user as IUser;
-  const userEmail = user.email;
+  const user = req.user;
+  const userEmail = user?.email;
   const isDeleted = await userModel.remove({ email: userEmail });
   if (isDeleted.deletedCount >= 1) {
     res.status(200).json({ message: "successfully deleted" });
