@@ -82,6 +82,17 @@ export const changePasswordController = async (req: Request, res: Response) => {
 };
 
 export const getUsersList = async (req: Request, res: Response) => {
-  const users = await userModel.find({});
-  res.status(200).send(users);
+  if (typeof req.query.page === "string") {
+    const page: number = parseInt(req.query.page, 10);
+    const perPage = 3; // the amount of users on one page
+    userModel
+      .find({})
+      .skip(perPage * page - perPage)
+      .limit(perPage)
+      .then((userList: any) => {
+        res.status(200).json({ users: userList });
+      });
+  } else {
+    res.status(400).json({ message: "error" });
+  }
 };
