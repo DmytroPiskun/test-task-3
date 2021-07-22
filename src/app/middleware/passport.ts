@@ -16,19 +16,6 @@ const opts = {
   jwtFromRequest: tokenExtractor,
 };
 
-// module.exports = (passport: { use: (arg0: Strategy) => void }) => {
-//   passport.use(
-//     new Strategy(opts, async (payload, done) => {
-//       try {
-//         const user = await userModel.findOne({ email: payload.email });
-//         return done(null, user || false);
-//       } catch (e) {
-//         console.log(e);
-//       }
-//     })
-//   );
-// };
-
 export const myPassort = (passport: { use: (arg0: Strategy) => void }) => {
   passport.use(
     new Strategy(opts, async (payload, done) => {
