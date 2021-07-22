@@ -3,6 +3,7 @@ import configuration from "../config.json";
 import { connect } from "mongoose";
 import passport from "passport";
 import { env } from "./utils/env/env";
+import { Router } from "express";
 
 connect(env.dbLink)
   .then(() => {
