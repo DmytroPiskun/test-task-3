@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
-import { IUser } from "../interfaces";
-import { AnySchema, ObjectSchema } from "yup";
+import { AnySchema } from "yup";
 export const dataValidator =
   <TSchema extends AnySchema>(schema: TSchema) =>
   async (req: Request, res: Response, next: Function) => {
