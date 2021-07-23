@@ -1,58 +1,38 @@
 import { Request, Response } from "express";
-import userModel from "../models/userModel";
-import { usersRepository } from "../repositories";
-import { compareSync, genSaltSync, hashSync } from "bcrypt";
-import { JwtPayload, sign, verify } from "jsonwebtoken";
+import { findUsersCount, userPaginate } from "../repositories/users.repository";
+import { JwtPayload, verify } from "jsonwebtoken";
 import { env } from "../../utils/env/env";
-import { IUser } from "../interfaces";
+import {
+  loginUser,
+  registerUser,
+  removeMe,
+  changePassword,
+  paginate,
+} from "../../services/userService";
+
 export const registationController = async (req: Request, res: Response) => {
-  if (
-    typeof req.body.password === "string" &&
-    typeof req.body.email === "string"
-  ) {
-    const userEmail = req.body.email;
-    const userPassword = req.body.password;
-    if (typeof userPassword != "undefined") {
-      const salt = genSaltSync(10);
-      const newHash = hashSync(newPassword, salt);
-      await userModel.updateOne(authUser, { password: newHash });
-      res.status(200).json(authUser);
-    } else {
-      res.status(404).json({ message: "bad password" });
-    }
-  } else {
-    res.status(400).json("bad");
-  }
+  const userEmail = req.body.email;
+  const userPassword = req.body.password;
+  registerUser(userPassword, userEmail);
+  res.status(200).redirect("/");
 };
 
 export const loginController = async (req: Request, res: Response) => {
-  if (
-    typeof req.body.password === "string" &&
-    typeof req.body.email === "string"
-  ) {
-    const userEmail = req.body.email;
-    const userPassword = req.body.password;
-    const authingUser = await userModel.findOne({ email: userEmail });
-
-    if (compareSync(userPassword, authingUser.password)) {
-      const token = sign({ email: userEmail }, env.tokenSecret, {
-        expiresIn: 60 * 60,
-        algorithm: "HS384",
-      });
-      res.status(200).json({ accessToken: token });
-    } else {
-      res.status(401).send("Unauthorized");
-    }
+  const userEmail = req.body.email;
+  const userPassword = req.body.password;
+  const token = await loginUser(userPassword, userEmail);
+  if (token) {
+    res.status(200).json({ accessToken: token });
   } else {
-    res.status(400).json({ message: "error" });
+    res.status(403).json({ message: "unauthorized" });
   }
 };
 
 export const deleteAccountContoller = async (req: Request, res: Response) => {
   const user = req.user;
   const userEmail = user?.email;
-  const isDeleted = await userModel.remove({ email: userEmail });
-  if (isDeleted.deletedCount >= 1) {
+  const result = await removeMe(userEmail);
+  if (result) {
     res.status(200).json({ message: "successfully deleted" });
   } else {
     res.status(400).json({ message: "smth went wrong and data wasnt deleted" });
@@ -67,32 +47,29 @@ export const changePasswordController = async (req: Request, res: Response) => {
     const userEmail = verifiedToken.email;
     const oldPassword = req.body.password;
     const newPassword = req.body.newPassword;
-    const authUser = await userModel.findOne({ email: userEmail });
-    if (compareSync(oldPassword, authUser.password)) {
-      const salt = genSaltSync(10);
-      const newHash = hashSync(newPassword, salt);
-      await userModel.updateOne(authUser, { password: newHash });
-      res.status(200).json(authUser);
+    const isUpdated = await changePassword(userEmail, oldPassword, newPassword);
+    if (isUpdated) {
+      res.status(200).json({ message: "password changed" });
     } else {
-      res.status(404).json({ message: "bad password" });
+      res
+        .status(400)
+        .json({ message: "smth went wrong and password wanst changed" });
     }
   } else {
-    res.status(400).json("bad");
+    res.status(400).json({ message: "invalid token" });
   }
 };
 
 export const getUsersList = async (req: Request, res: Response) => {
-  if (typeof req.query.page === "string") {
-    const page: number = parseInt(req.query.page, 10);
-    const perPage = 3; // the amount of users on one page
-    userModel
-      .find({})
-      .skip(perPage * page - perPage)
-      .limit(perPage)
-      .then((userList: any) => {
-        res.status(200).json({ users: userList });
-      });
+  const NUMERAL_SYSTEM = 10;
+  const dbUsersCount = findUsersCount();
+  const page: number = parseInt(req.body?.page, NUMERAL_SYSTEM);
+  const perPage: number = parseInt(req.body?.perPage, NUMERAL_SYSTEM);
+  const maxPage = Math.ceil((await dbUsersCount) / perPage);
+  if (page <= maxPage) {
+    const userList = await paginate(perPage, page);
+    res.status(200).json({ users: userList });
   } else {
-    res.status(400).json({ message: "error" });
+    res.status(400).json({ message: "this page doesnt exist" });
   }
 };
