@@ -13,8 +13,11 @@ import {
 export const registationController = async (req: Request, res: Response) => {
   const userEmail = req.body.email;
   const userPassword = req.body.password;
-  registerUser(userPassword, userEmail);
-  res.status(200).redirect("/");
+  if (registerUser(userPassword, userEmail)) {
+    res.status(200).redirect("/");
+  } else {
+    res.status(400).json({ message: "error" });
+  }
 };
 
 export const loginController = async (req: Request, res: Response) => {
@@ -24,7 +27,7 @@ export const loginController = async (req: Request, res: Response) => {
   if (token) {
     res.status(200).json({ accessToken: token });
   } else {
-    res.status(403).json({ message: "unauthorized" });
+    res.status(401).json({ message: "unauthorized" });
   }
 };
 
@@ -61,15 +64,16 @@ export const changePasswordController = async (req: Request, res: Response) => {
 };
 
 export const getUsersList = async (req: Request, res: Response) => {
-  const NUMERAL_SYSTEM = 10;
-  const dbUsersCount = findUsersCount();
-  const page: number = parseInt(req.body?.page, NUMERAL_SYSTEM);
-  const perPage: number = parseInt(req.body?.perPage, NUMERAL_SYSTEM);
-  const maxPage = Math.ceil((await dbUsersCount) / perPage);
+  const NUMERAL_SYSTEM: number = 10;
+  const dbUsersCount: number = await findUsersCount();
+  const page: number = req.body?.page;
+  const perPage: number = req.body?.perPage;
+  const maxPage = Math.ceil(dbUsersCount / perPage);
   if (page <= maxPage) {
     const userList = await paginate(perPage, page);
     res.status(200).json({ users: userList });
   } else {
-    res.status(400).json({ message: "this page doesnt exist" });
+    const userList = await paginate(perPage, maxPage);
+    res.status(200).json({ users: userList });
   }
 };
