@@ -18,6 +18,7 @@ export const registerUser = async (userPassword: string, userEmail: string) => {
   });
   const newUser = await createUser(user);
   await newUser.save();
+  return true;
 };
 
 export const loginUser = async (userPassword: string, userEmail: string) => {
@@ -31,10 +32,7 @@ export const loginUser = async (userPassword: string, userEmail: string) => {
 
 export const removeMe = async (userEmail: string | undefined) => {
   const isDeleted = await removeUser({ email: userEmail });
-  if (isDeleted.deletedCount >= 1) {
-    return true;
-  }
-  return false;
+  return isDeleted.deletedCount > 0;
 };
 
 export const changePassword = async (
