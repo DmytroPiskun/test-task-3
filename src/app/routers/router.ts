@@ -1,18 +1,19 @@
 import { Router } from "express";
+import { isValidData } from "../middleware/isValidUserData.middleware";
 import { isAuth } from "../middleware/isAuth";
 import {
   defaultController,
   testController,
   testValidController,
-} from "../controllers/baseControllers";
+} from "../controllers/test.controllers";
 import {
   changePasswordController,
   deleteAccountContoller,
   getUsersList,
   loginController,
   registationController,
-} from "../controllers/userControllers";
-import { isValidPages } from "../middleware/isValidPages";
+} from "../controllers/user.controllers";
+import { isValidPages } from "../middleware/isValidPages.middleware";
 // Export module for registering router in express app
 export const router: Router = Router();
 
