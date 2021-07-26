@@ -1,8 +1,7 @@
 import { Strategy } from "passport-jwt";
 import { env } from "../../utils/env/env";
 import userModel from "../models/userModel";
-import { Request, Response } from "express";
-import { write } from "fs";
+import { Request } from "express";
 const tokenExtractor = function (req: Request) {
   try {
     if (typeof req.headers["authorization"] === "string") {
