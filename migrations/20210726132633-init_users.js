@@ -1,14 +1,28 @@
 module.exports = {
   async up(db, client) {
-    // TODO write your migration here.
-    // See https://github.com/seppevs/migrate-mongo/#creating-a-new-migration-script
-    // Example:
-    // await db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: true}});
+    try {
+      const collections = await db.listCollections({name: "users"}).toArray();
+      if(collections.length>0)
+      {
+        throw new Error(`Collection "users" already exists `)
+      }
+      else 
+      {
+        await db.createCollection("users")
+      }
+    } catch (error) {
+      throw error
+    }
   },
 
   async down(db, client) {
-    // TODO write the statements to rollback your migration (if possible)
-    // Example:
-    // await db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: false}});
+    try
+    {
+      await db.dropCollection("users")
+    }
+    catch(error)
+    {
+      throw new Error(error)
+    }
   }
 };
