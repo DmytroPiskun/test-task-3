@@ -12,10 +12,10 @@ import { generateToken } from "../utils/generateToken";
 
 export const registerUser = async (userPassword: string, userEmail: string) => {
   const hash = saltPassword(userPassword);
-  const user = new userModel({
+  const user = {
     email: userEmail,
     password: hash,
-  });
+  };
   const newUser = await createUser(user);
   await newUser.save();
   return true;
@@ -31,12 +31,12 @@ export const loginUser = async (userPassword: string, userEmail: string) => {
 };
 
 export const removeMe = async (userEmail: string | undefined) => {
-  const isDeleted = await removeUser({ email: userEmail });
-  return isDeleted.deletedCount > 0;
+  const deleteResult = await removeUser({ email: userEmail });
+  return deleteResult.deletedCount > 0;
 };
 
 export const changePassword = async (
-  userEmail: string,
+  userEmail: string | undefined,
   oldPassword: string,
   newPassword: string
 ) => {

@@ -4,14 +4,14 @@ import {
   defaultController,
   testController,
   testValidController,
-} from "../controllets/baseControllers";
+} from "../controllers/baseControllers";
 import {
   changePasswordController,
   deleteAccountContoller,
   getUsersList,
   loginController,
   registationController,
-} from "../controllets/userControllers";
+} from "../controllers/userControllers";
 import { isValidPages } from "../middleware/isValidPages";
 // Export module for registering router in express app
 export const router: Router = Router();
@@ -21,10 +21,10 @@ router.get("/", defaultController);
 router.post("/registration", isValidData, registationController);
 router.post("/login", isValidData, loginController);
 
-router.get("/allusers", isValidPages, getUsersList);
+router.get("/users", isValidPages, getUsersList);
 
-router.post("/delete-account", isAuth, isValidData, deleteAccountContoller);
-router.post("/changepassword", isAuth, isValidData, changePasswordController);
+router.delete("/me", isAuth, isValidData, deleteAccountContoller);
+router.post("/change-password", isAuth, isValidData, changePasswordController);
 
 router.get("/testpass", isAuth, testController);
 router.get("/testvalid", isValidData, testValidController);

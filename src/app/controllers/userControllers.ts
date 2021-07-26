@@ -1,19 +1,17 @@
 import { Request, Response } from "express";
 import { findUsersCount } from "../repositories/users.repository";
-import { JwtPayload, verify } from "jsonwebtoken";
-import { env } from "../../utils/env/env";
 import {
   loginUser,
   registerUser,
   removeMe,
   changePassword,
   paginate,
-} from "../../services/userService";
+} from "../../services/user.service";
 export const registationController = async (req: Request, res: Response) => {
   const userEmail = req.body.email;
   const userPassword = req.body.password;
   if (registerUser(userPassword, userEmail)) {
-    res.status(200).redirect("/");
+    res.status(200).json({ message: "refistrated" });
   } else {
     res.status(400).json({ message: "error" });
   }
@@ -24,10 +22,9 @@ export const loginController = async (req: Request, res: Response) => {
   const userPassword = req.body.password;
   const token = await loginUser(userPassword, userEmail);
   if (token) {
-    res.status(200).json({ accessToken: token });
-  } else {
-    res.status(401).json({ message: "unauthorized" });
+    return res.status(200).json({ accessToken: token });
   }
+  res.status(401).json({ message: "unauthorized" });
 };
 
 export const deleteAccountContoller = async (req: Request, res: Response) => {
@@ -42,27 +39,16 @@ export const deleteAccountContoller = async (req: Request, res: Response) => {
 };
 
 export const changePasswordController = async (req: Request, res: Response) => {
-  try {
-    const authHeader = req.headers["authorization"];
-    const token = authHeader?.split(" ")[1];
-    const verifiedToken = verify(
-      token || "throw error",
-      env.tokenSecret
-    ) as JwtPayload;
-
-    const userEmail = verifiedToken.email;
-    const oldPassword = req.body.password;
-    const newPassword = req.body.newPassword;
-    const isUpdated = await changePassword(userEmail, oldPassword, newPassword);
-    if (isUpdated) {
-      res.status(200).json({ message: "password changed" });
-    } else {
-      res
-        .status(400)
-        .json({ message: "smth went wrong and password wanst changed" });
-    }
-  } catch {
-    res.status(400).json({ message: "error" });
+  const userEmail = req.user?.email;
+  const oldPassword = req.body.password;
+  const newPassword = req.body.newPassword;
+  const isUpdated = await changePassword(userEmail, oldPassword, newPassword);
+  if (isUpdated) {
+    res.status(200).json({ message: "password changed" });
+  } else {
+    res
+      .status(400)
+      .json({ message: "smth went wrong and password wanst changed" });
   }
 };
 
@@ -73,7 +59,9 @@ export const getUsersList = async (req: Request, res: Response) => {
   const maxPage = Math.ceil(dbUsersCount / perPage);
   if (page <= maxPage) {
     const userList = await paginate(perPage, page);
-    res.status(200).json({ users: userList });
+    res
+      .status(200)
+      .json({ users: userList, currentPage: page, itemsPerPage: perPage });
   } else {
     const userList = await paginate(perPage, maxPage);
     res.status(200).json({ users: userList });

@@ -2,6 +2,7 @@ import { Strategy } from "passport-jwt";
 import { env } from "../../utils/env/env";
 import userModel from "../models/userModel";
 import { Request, Response } from "express";
+import { write } from "fs";
 const tokenExtractor = function (req: Request) {
   try {
     if (typeof req.headers["authorization"] === "string") {
@@ -9,11 +10,11 @@ const tokenExtractor = function (req: Request) {
       const token = authHeader.split(" ")[1];
       return token;
     } else {
-      const token = "invalid";
+      const token = null;
       return token;
     }
   } catch {
-    const token = "ivalid";
+    const token = null;
     return token;
   }
 };
