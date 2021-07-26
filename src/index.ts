@@ -7,7 +7,8 @@ import { myPassort } from "./app/middleware/passport.middleware";
 connect(env.dbLink)
   .then(() => {
     app.use(passport.initialize());
-    require("./app/middleware/passport")(passport);
+    myPassort(passport);
+    //require("./app/middleware/passport")(passport);
 
     // Start the application by listening to specific port
     const port = Number(env.port || configuration.PORT || 8080);
