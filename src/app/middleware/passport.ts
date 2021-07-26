@@ -1,11 +1,17 @@
 import { Strategy } from "passport-jwt";
 import { env } from "../../utils/env/env";
 import userModel from "../models/userModel";
-const tokenExtractor = function (req: any) {
+import { Request, Response } from "express";
+const tokenExtractor = function (req: Request) {
   try {
-    const authHeader = req.headers["authorization"];
-    const token = authHeader.split(" ")[1];
-    return token;
+    if (typeof req.headers["authorization"] === "string") {
+      const authHeader = req.headers["authorization"];
+      const token = authHeader.split(" ")[1];
+      return token;
+    } else {
+      const token = "invalid";
+      return token;
+    }
   } catch {
     const token = "ivalid";
     return token;
