@@ -8,7 +8,7 @@ module.exports = {
       }
       else 
       {
-        await db.createCollection("users")
+        await db.createCollection("userStatus")
       }
     } catch (error) {
       throw error
@@ -18,7 +18,7 @@ module.exports = {
   async down(db, client) {
     try
     {
-      await db.dropCollection("users")
+      await db.dropCollection("userStatus")
     }
     catch(error)
     {
