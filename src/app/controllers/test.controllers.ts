@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import userModel from "../models/userModel";
+import userModel from "../models/user.model";
 
 export const defaultController = async (_req: Request, res: Response) => {
   const users = await userModel.find({});

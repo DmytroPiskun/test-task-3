@@ -64,6 +64,8 @@ export const getUsersList = async (req: Request, res: Response) => {
       .json({ users: userList, currentPage: page, itemsPerPage: perPage });
   } else {
     const userList = await paginate(perPage, maxPage);
-    res.status(200).json({ users: userList });
+    res
+      .status(200)
+      .json({ users: userList, currentPage: page, itemsPerPage: perPage });
   }
 };

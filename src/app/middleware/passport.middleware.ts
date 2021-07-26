@@ -1,6 +1,6 @@
 import { Strategy } from "passport-jwt";
 import { env } from "../../utils/env/env";
-import userModel from "../models/userModel";
+import userModel from "../models/user.model";
 import { Request } from "express";
 const tokenExtractor = function (req: Request) {
   try {

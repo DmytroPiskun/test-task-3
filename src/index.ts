@@ -3,7 +3,7 @@ import configuration from "../config.json";
 import { connect } from "mongoose";
 import passport from "passport";
 import { env } from "./utils/env/env";
-
+import { myPassort } from "./app/middleware/passport.middleware";
 connect(env.dbLink)
   .then(() => {
     app.use(passport.initialize());

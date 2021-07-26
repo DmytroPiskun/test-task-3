@@ -1,5 +1,5 @@
 import { IUser, IUserEmail } from "../interfaces";
-import userModel from "../models/userModel";
+import userModel from "../models/user.model";
 
 export const createUser = (user: IUser) => userModel.create(user);
 export const findUser = (key: IUserEmail) => {
