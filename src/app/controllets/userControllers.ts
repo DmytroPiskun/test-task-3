@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { findUsersCount, userPaginate } from "../repositories/users.repository";
+import { findUsersCount } from "../repositories/users.repository";
 import { JwtPayload, verify } from "jsonwebtoken";
 import { env } from "../../utils/env/env";
 import {
@@ -9,7 +9,6 @@ import {
   changePassword,
   paginate,
 } from "../../services/userService";
-
 export const registationController = async (req: Request, res: Response) => {
   const userEmail = req.body.email;
   const userPassword = req.body.password;
@@ -43,10 +42,14 @@ export const deleteAccountContoller = async (req: Request, res: Response) => {
 };
 
 export const changePasswordController = async (req: Request, res: Response) => {
-  if (typeof req.headers["authorization"] !== "undefined") {
+  try {
     const authHeader = req.headers["authorization"];
-    const token = authHeader.split(" ")[1];
-    const verifiedToken = verify(token, env.tokenSecret) as JwtPayload;
+    const token = authHeader?.split(" ")[1];
+    const verifiedToken = verify(
+      token || "throw error",
+      env.tokenSecret
+    ) as JwtPayload;
+
     const userEmail = verifiedToken.email;
     const oldPassword = req.body.password;
     const newPassword = req.body.newPassword;
@@ -58,13 +61,12 @@ export const changePasswordController = async (req: Request, res: Response) => {
         .status(400)
         .json({ message: "smth went wrong and password wanst changed" });
     }
-  } else {
-    res.status(400).json({ message: "invalid token" });
+  } catch {
+    res.status(400).json({ message: "error" });
   }
 };
 
 export const getUsersList = async (req: Request, res: Response) => {
-  const NUMERAL_SYSTEM: number = 10;
   const dbUsersCount: number = await findUsersCount();
   const page: number = req.body?.page;
   const perPage: number = req.body?.perPage;
