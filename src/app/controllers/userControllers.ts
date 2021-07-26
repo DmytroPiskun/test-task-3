@@ -11,7 +11,7 @@ export const registationController = async (req: Request, res: Response) => {
   const userEmail = req.body.email;
   const userPassword = req.body.password;
   if (registerUser(userPassword, userEmail)) {
-    res.status(200).json({ message: "refistrated" });
+    res.status(200).json({ message: "registrated" });
   } else {
     res.status(400).json({ message: "error" });
   }
