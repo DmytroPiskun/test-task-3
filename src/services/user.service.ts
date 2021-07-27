@@ -1,9 +1,8 @@
 import { compareSync } from "bcrypt";
-import userModel from "../app/models/user.model";
 import {
   createUser,
   findUser,
-  removeUser,
+  setUserStatusId,
   updateUser,
   userPaginate,
 } from "../app/repositories/users.repository";
@@ -15,6 +14,7 @@ export const registerUser = async (userPassword: string, userEmail: string) => {
   const user = {
     email: userEmail,
     password: hash,
+    status: await setUserStatusId("Active"),
   };
   const newUser = await createUser(user);
   await newUser.save();
@@ -31,8 +31,19 @@ export const loginUser = async (userPassword: string, userEmail: string) => {
 };
 
 export const removeMe = async (userEmail: string | undefined) => {
-  const deleteResult = await removeUser({ email: userEmail });
-  return deleteResult.deletedCount > 0;
+  try {
+    const authUser = await findUser({ email: userEmail });
+    if (authUser) {
+      await updateUser(authUser, {
+        status: await setUserStatusId("Blocked"),
+      });
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
 };
 
 export const changePassword = async (

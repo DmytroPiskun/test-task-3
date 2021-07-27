@@ -1,6 +1,7 @@
 import { IUser, IUserEmail } from "../interfaces";
+import { ObjectId } from "mongoose";
 import userModel from "../models/user.model";
-
+import statusModel from "../models/status.model";
 export const createUser = (user: IUser) => userModel.create(user);
 export const findUser = (key: IUserEmail) => {
   return userModel.findOne(key);
@@ -17,4 +18,13 @@ export const userPaginate = (perPage: number, page: number) =>
 export const findUsersCount = async () => {
   const count = await userModel.countDocuments();
   return count;
+};
+
+export const setUserStatusId = async (yourStatus: string) => {
+  const status = await statusModel.findOne({ status: yourStatus });
+  return status._id;
+};
+export const getUserStatusById = async (statusId: ObjectId) => {
+  const status = await statusModel.findById(statusId);
+  return status.status;
 };
