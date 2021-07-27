@@ -1,4 +1,6 @@
 import { compareSync } from "bcrypt";
+import statusModel from "../app/models/status.model";
+import userModel from "../app/models/user.model";
 import {
   createUser,
   findUser,
