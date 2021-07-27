@@ -1,10 +1,9 @@
 // In this file you can configure migrate-mongo
-
+require(`dotenv`).config();
 const config = {
   mongodb: {
     // TODO Change (or review) the url to your MongoDB:
-    url: "mongodb+srv://admin:12345@cluster0.4f7pf.mongodb.net/myusers?retryWrites=true&w=majority",
-
+    url: process.env.DB_LINK_CONNECTION,
     // TODO Change this to your database name:
     databaseName: "myusers",
 

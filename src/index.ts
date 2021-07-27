@@ -8,9 +8,6 @@ connect(env.dbLink)
   .then(() => {
     app.use(passport.initialize());
     myPassort(passport);
-    //require("./app/middleware/passport")(passport);
-
-    // Start the application by listening to specific port
     const port = Number(env.port || configuration.PORT || 8080);
     app.listen(port, () => {
       console.info("Express application started on port: " + port);

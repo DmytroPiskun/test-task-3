@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import {
   findUsersCount,
   getUserStatusById,
+  processingUserList,
 } from "../repositories/users.repository";
 import {
   loginUser,
@@ -61,19 +62,10 @@ export const getUsersList = async (req: Request, res: Response) => {
   const perPage: number = req.body?.perPage;
   const maxPage = Math.ceil(dbUsersCount / perPage);
   const userList = await paginate(perPage, Math.min(page, maxPage));
-
-  const prettyList = await Promise.all(
-    userList.map(async (el: any) => {
-      const prettyStatus = await getUserStatusById(el.status);
-      const prettyUser = {
-        email: el.email,
-        password: el.password,
-        status: prettyStatus,
-      };
-      return prettyUser;
-    })
-  );
-  res
-    .status(200)
-    .json({ users: prettyList, currentPage: page, itemsPerPage: perPage });
+  const processUserList = processingUserList(userList);
+  res.status(200).json({
+    users: processUserList,
+    currentPage: page,
+    itemsPerPage: perPage,
+  });
 };
