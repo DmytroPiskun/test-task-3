@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import {
   findUsersCount,
-  getUserStatusById,
   processingUserList,
 } from "../repositories/users.repository";
 import {

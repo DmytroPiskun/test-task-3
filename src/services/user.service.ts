@@ -1,22 +1,22 @@
 import { compareSync } from "bcrypt";
-import statusModel from "../app/models/status.model";
-import userModel from "../app/models/user.model";
 import {
   createUser,
   findUser,
-  setUserStatusId,
+  getUserStatusIdByStatus,
   updateUser,
   userPaginate,
 } from "../app/repositories/users.repository";
+import { statuses } from "../enums/statuses.enum";
 import { saltPassword } from "../utils/generateSavePassword";
 import { generateToken } from "../utils/generateToken";
 
 export const registerUser = async (userPassword: string, userEmail: string) => {
   const hash = saltPassword(userPassword);
+  const status = await getUserStatusIdByStatus(statuses.Active);
   const user = {
     email: userEmail,
     password: hash,
-    status: await setUserStatusId("Active"),
+    status: status,
   };
   const newUser = await createUser(user);
   await newUser.save();
@@ -34,16 +34,15 @@ export const loginUser = async (userPassword: string, userEmail: string) => {
 
 export const removeMe = async (userEmail: string | undefined) => {
   try {
-    const authUser = await findUser({ email: userEmail });
-    if (authUser) {
-      await updateUser(authUser, {
-        status: await setUserStatusId("Blocked"),
-      });
-      return true;
-    }
-    return false;
-  } catch (error) {
-    console.log(error);
+    const statusBlocked = await getUserStatusIdByStatus(statuses.Blocked);
+    await updateUser(
+      { email: userEmail },
+      {
+        status: statusBlocked,
+      }
+    );
+    return true;
+  } catch {
     return false;
   }
 };

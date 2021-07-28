@@ -1,5 +1,4 @@
-import { IUser, IUserEmail } from "../interfaces";
-import { ObjectId } from "mongoose";
+import { IAggregatedUser, IUser, IUserEmail } from "../interfaces";
 import userModel from "../models/user.model";
 import statusModel from "../models/status.model";
 export const createUser = (user: IUser) => userModel.create(user);
@@ -7,7 +6,7 @@ export const findUser = (key: IUserEmail) => {
   return userModel.findOne(key);
 };
 export const removeUser = (key: IUserEmail) => userModel.remove(key);
-export const updateUser = (user: IUser, newData: object) =>
+export const updateUser = (user: IUser | IUserEmail, newData: object) =>
   userModel.updateOne(user, newData);
 
 export const findUsersCount = async () => {
@@ -15,16 +14,15 @@ export const findUsersCount = async () => {
   return count;
 };
 
-export const setUserStatusId = async (yourStatus: string) => {
+export const getUserStatusIdByStatus = async (yourStatus: string) => {
   const status = await statusModel.findOne({ status: yourStatus });
   return status._id;
 };
-export const getUserStatusById = async (statusId: ObjectId) => {
-  const status = await statusModel.findById(statusId);
-  return status.status;
-};
 
-export const userPaginate = async (perPage: number, page: number) => {
+export const userPaginate = async (
+  perPage: number,
+  page: number
+): Promise<Promise<IAggregatedUser>[]> => {
   const paginatedUsers = await userModel
     .aggregate([
       {
@@ -49,7 +47,9 @@ export const userPaginate = async (perPage: number, page: number) => {
   return paginatedUsers;
 };
 
-export const processingUserList = (userList: Array<any>) => {
+export const processingUserList = (
+  userList: Array<IAggregatedUser> | Promise<IAggregatedUser>[]
+) => {
   const processUserList = userList.map((element: any) => {
     const processUser = {
       email: element.email,
