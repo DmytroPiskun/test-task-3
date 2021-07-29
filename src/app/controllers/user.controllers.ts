@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import {
+  findUser,
   findUsersCount,
   processingUserList,
 } from "../repositories/users.repository";
@@ -9,14 +10,24 @@ import {
   removeMe,
   changePassword,
   paginate,
+  sendVerifyEmail,
+  verifyAccount,
 } from "../../services/user.service";
+
 export const registationController = async (req: Request, res: Response) => {
   const userEmail = req.body.email;
   const userPassword = req.body.password;
-  if (registerUser(userPassword, userEmail)) {
-    res.status(200).json({ message: "registrated" });
+  const candidateEmail = await findUser({ email: userEmail });
+  if (!candidateEmail) {
+    const userSuccessToken = await registerUser(userPassword, userEmail);
+    if (userSuccessToken) {
+      sendVerifyEmail(userSuccessToken, userEmail);
+      res.status(200).json({ message: "registrated" });
+    } else {
+      res.status(400).json({ message: "error" });
+    }
   } else {
-    res.status(400).json({ message: "error" });
+    res.status(401).json({ message: "user with this  email already exist" });
   }
 };
 
@@ -67,4 +78,10 @@ export const getUsersList = async (req: Request, res: Response) => {
     currentPage: page,
     itemsPerPage: perPage,
   });
+};
+
+export const verifyController = async (req: Request, res: Response) => {
+  const codeFromParams = req.params?.verificationCode;
+  await verifyAccount(codeFromParams);
+  res.status(200).json({ message: "verified" });
 };

@@ -6,8 +6,8 @@ export const findUser = (key: IUserEmail) => {
   return userModel.findOne(key);
 };
 export const removeUser = (key: IUserEmail) => userModel.remove(key);
-export const updateUser = (user: IUser | IUserEmail, newData: object) =>
-  userModel.updateOne(user, newData);
+export const updateUser = async (user: object, newData: object) =>
+  await userModel.updateOne(user, newData);
 
 export const findUsersCount = async () => {
   const count = await userModel.countDocuments();
