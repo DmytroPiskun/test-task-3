@@ -12,6 +12,7 @@ import {
   getUsersList,
   loginController,
   registationController,
+  verifyController,
 } from "../controllers/user.controllers";
 import { isValidPages } from "../middleware/isValidPages.middleware";
 // Export module for registering router in express app
@@ -23,7 +24,7 @@ router.post("/registration", isValidData, registationController);
 router.post("/login", isValidData, loginController);
 
 router.get("/users", isValidPages, getUsersList);
-
+router.get("/verify/:verificationCode", verifyController);
 router.delete("/me", isAuth, isValidData, deleteAccountContoller);
 router.post("/change-password", isAuth, isValidData, changePasswordController);
 
