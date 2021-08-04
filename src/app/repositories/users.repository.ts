@@ -23,28 +23,32 @@ export const userPaginate = async (
   perPage: number,
   page: number
 ): Promise<IAggregatedUser[]> => {
-  const paginatedUsers = await userModel
-    .aggregate([
-      {
-        $lookup: {
-          from: "userstatuses",
-          localField: "status",
-          foreignField: "_id",
-          as: "currentStatus",
+  try {
+    const paginatedUsers = await userModel
+      .aggregate([
+        {
+          $lookup: {
+            from: "userstatuses",
+            localField: "status",
+            foreignField: "_id",
+            as: "currentStatus",
+          },
         },
-      },
-      {
-        $project: {
-          __v: 0,
-          _id: 0,
-          status: 0,
-          password: 0,
+        {
+          $project: {
+            __v: 0,
+            _id: 0,
+            status: 0,
+            password: 0,
+          },
         },
-      },
-    ])
-    .skip(perPage * (page - 1))
-    .limit(perPage);
-  return paginatedUsers;
+      ])
+      .skip(perPage * (page - 1))
+      .limit(perPage);
+    return paginatedUsers;
+  } catch {
+    return [];
+  }
 };
 
 export const processingUserList = (userList: Array<IAggregatedUser>) => {

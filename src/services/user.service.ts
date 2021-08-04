@@ -2,7 +2,9 @@ import { compareSync } from "bcrypt";
 import {
   createUser,
   findUser,
+  findUsersCount,
   getUserStatusIdByStatus,
+  processingUserList,
   updateUser,
   userPaginate,
 } from "../app/repositories/users.repository";
@@ -92,4 +94,12 @@ export const verifyAccount = async (userData: string) => {
   } catch {
     return false;
   }
+};
+
+export const getUserList = async (page: number, perPage: number) => {
+  const dbUsersCount: number = await findUsersCount();
+  const maxPage = Math.ceil(dbUsersCount / perPage);
+  const userList = await paginate(perPage, Math.min(page, maxPage));
+  const processUserList = processingUserList(userList);
+  return processUserList;
 };
