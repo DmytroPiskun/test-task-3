@@ -12,6 +12,7 @@ import {
   getUsersList,
   loginController,
   registationController,
+  verificationPage,
   verifyController,
 } from "../controllers/user.controllers";
 import { isValidPages } from "../middleware/isValidPages.middleware";
@@ -24,7 +25,8 @@ router.post("/registration", isValidData, registationController);
 router.post("/login", isValidData, loginController);
 
 router.get("/users", isValidPages, getUsersList);
-router.get("/verify/:verificationCode", verifyController);
+router.get("/verification-page/:verificationCode", verificationPage);
+router.post("/verification-page/verify/:verificationCode", verifyController);
 router.delete("/me", isAuth, isValidData, deleteAccountContoller);
 router.post("/change-password", isAuth, isValidData, changePasswordController);
 

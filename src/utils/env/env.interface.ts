@@ -3,4 +3,6 @@ export interface IEnv {
   dbLink: string;
   port: string;
   baseUrl: string;
+  sendinblueApiKey: string;
+  googlePassword: string;
 }
