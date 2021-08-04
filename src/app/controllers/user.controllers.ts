@@ -11,6 +11,7 @@ import {
   changePassword,
   paginate,
   verifyAccount,
+  getUserList,
 } from "../../services/user.service";
 import { IVerificationCode } from "../interfaces/user.interface";
 import { sendVerifyEmail } from "../../services/email.service";
@@ -69,15 +70,9 @@ export const changePasswordController = async (req: Request, res: Response) => {
 };
 
 export const getUsersList = async (req: Request, res: Response) => {
-  const dbUsersCount: number = await findUsersCount();
-  if (dbUsersCount === 0) {
-    return res.status(400).json({ users: [], currentPage: 0 });
-  }
   const page: number = req.body?.page;
   const perPage: number = req.body?.perPage;
-  const maxPage = Math.ceil(dbUsersCount / perPage);
-  const userList = await paginate(perPage, Math.min(page, maxPage));
-  const processUserList = processingUserList(userList);
+  const processUserList = await getUserList(page, perPage);
   res.status(200).json({
     users: processUserList,
     currentPage: page,
