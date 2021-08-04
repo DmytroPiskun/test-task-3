@@ -78,11 +78,11 @@ export const paginate = async (perPage: number, page: number) => {
 export const verifyAccount = async (userData: string) => {
   try {
     const statusActive = await getUserStatusIdByStatus(statuses.Active);
-    const test = await userModel.find({ verificationToken: userData });
     const modifiedCount = await updateUser(
       { verificationToken: userData },
       {
         status: statusActive,
+        verificationToken: null,
       }
     );
     if (modifiedCount.nModified >= 1) {

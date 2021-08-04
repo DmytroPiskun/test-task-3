@@ -8,7 +8,7 @@ export const sendVerifyEmail = async (
     const trasporter = createTransport({
       service: "gmail",
       auth: {
-        user: "testnodejstaskacc@gmail.com",
+        user: env.googleEmail,
         pass: env.googlePassword,
       },
     });

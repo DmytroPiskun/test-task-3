@@ -7,6 +7,7 @@ const mapEnv = (envData: NodeJS.ProcessEnv) => {
     BASE_URL = "",
     SENDINBLUE_API_KEY = "",
     GOOGLE_SENDER_PASSWORD = "",
+    GOOGLE_SENDER_EMAIL = "",
   } = envData;
   const parsed: IEnv = {
     tokenSecret: TOKEN_SECRET,
@@ -15,6 +16,7 @@ const mapEnv = (envData: NodeJS.ProcessEnv) => {
     baseUrl: BASE_URL,
     sendinblueApiKey: SENDINBLUE_API_KEY,
     googlePassword: GOOGLE_SENDER_PASSWORD,
+    googleEmail: GOOGLE_SENDER_EMAIL,
   };
   return Object.freeze(parsed);
 };

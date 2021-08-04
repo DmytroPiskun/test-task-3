@@ -71,7 +71,7 @@ export const changePasswordController = async (req: Request, res: Response) => {
 export const getUsersList = async (req: Request, res: Response) => {
   const dbUsersCount: number = await findUsersCount();
   if (dbUsersCount === 0) {
-    return res.status(400).json({ message: "there are no any users in DB" });
+    return res.status(400).json({ users: [], currentPage: 0 });
   }
   const page: number = req.body?.page;
   const perPage: number = req.body?.perPage;
