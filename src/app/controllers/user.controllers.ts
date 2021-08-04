@@ -10,24 +10,26 @@ import {
   removeMe,
   changePassword,
   paginate,
-  sendVerifyEmail,
   verifyAccount,
 } from "../../services/user.service";
+import { IVerificationCode } from "../interfaces/user.interface";
+import { sendVerifyEmail } from "../../services/email.service";
 
 export const registationController = async (req: Request, res: Response) => {
   const userEmail = req.body.email;
   const userPassword = req.body.password;
-  const candidateEmail = await findUser({ email: userEmail });
-  if (!candidateEmail) {
-    const userSuccessToken = await registerUser(userPassword, userEmail);
-    if (userSuccessToken) {
-      sendVerifyEmail(userSuccessToken, userEmail);
-      res.status(200).json({ message: "registrated" });
-    } else {
-      res.status(400).json({ message: "error" });
-    }
+  const candidate = await findUser({ email: userEmail });
+  if (candidate) {
+    return res
+      .status(400)
+      .json({ message: "user with this  email already exist" });
+  }
+  const userSuccessToken = await registerUser(userPassword, userEmail);
+  if (userSuccessToken) {
+    sendVerifyEmail(userSuccessToken, userEmail);
+    res.status(200).json({ message: "registrated" });
   } else {
-    res.status(401).json({ message: "user with this  email already exist" });
+    res.status(400).json({ message: "error" });
   }
 };
 
@@ -68,6 +70,9 @@ export const changePasswordController = async (req: Request, res: Response) => {
 
 export const getUsersList = async (req: Request, res: Response) => {
   const dbUsersCount: number = await findUsersCount();
+  if (dbUsersCount === 0) {
+    return res.status(400).json({ message: "there are no any users in DB" });
+  }
   const page: number = req.body?.page;
   const perPage: number = req.body?.perPage;
   const maxPage = Math.ceil(dbUsersCount / perPage);
@@ -80,8 +85,26 @@ export const getUsersList = async (req: Request, res: Response) => {
   });
 };
 
-export const verifyController = async (req: Request, res: Response) => {
+export const verifyController = async (
+  req: Request<IVerificationCode>,
+  res: Response
+) => {
   const codeFromParams = req.params?.verificationCode;
-  await verifyAccount(codeFromParams);
-  res.status(200).json({ message: "verified" });
+  if (await verifyAccount(codeFromParams)) {
+    res.status(200).json({ message: "verified" });
+  } else {
+    res.status(400).json({ message: "invalid code" });
+  }
+};
+
+export const verificationPage = async (
+  req: Request<IVerificationCode>,
+  res: Response
+) => {
+  const codeFromParams = req.params?.verificationCode;
+  try {
+    res.status(200).json({ verificationCode: codeFromParams }); //send code to front
+  } catch (error) {
+    res.status(400);
+  }
 };

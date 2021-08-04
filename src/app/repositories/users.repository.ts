@@ -22,7 +22,7 @@ export const getUserStatusIdByStatus = async (yourStatus: string) => {
 export const userPaginate = async (
   perPage: number,
   page: number
-): Promise<Promise<IAggregatedUser>[]> => {
+): Promise<IAggregatedUser[]> => {
   const paginatedUsers = await userModel
     .aggregate([
       {
@@ -47,15 +47,12 @@ export const userPaginate = async (
   return paginatedUsers;
 };
 
-export const processingUserList = (
-  userList: Array<IAggregatedUser> | Promise<IAggregatedUser>[]
-) => {
-  const processUserList = userList.map((element: any) => {
-    const processUser = {
+export const processingUserList = (userList: Array<IAggregatedUser>) => {
+  const processUserList = userList.map((element) => {
+    return {
       email: element.email,
       status: element.currentStatus[0].status,
     };
-    return processUser;
   });
   return processUserList;
 };

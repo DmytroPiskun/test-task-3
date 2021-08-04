@@ -1,6 +1,6 @@
-enum statusEnum {
+enum UserStatuses {
   Active = "Active",
   Blocked = "Blocked",
   Unverifyed = "Unverified",
 }
-export const statuses = statusEnum;
+export const statuses = UserStatuses;

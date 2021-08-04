@@ -5,12 +5,16 @@ const mapEnv = (envData: NodeJS.ProcessEnv) => {
     DB_LINK_CONNECTION = "",
     DEFAULT_PORT = "",
     BASE_URL = "",
+    SENDINBLUE_API_KEY = "",
+    GOOGLE_SENDER_PASSWORD = "",
   } = envData;
   const parsed: IEnv = {
     tokenSecret: TOKEN_SECRET,
     dbLink: DB_LINK_CONNECTION,
     port: DEFAULT_PORT,
     baseUrl: BASE_URL,
+    sendinblueApiKey: SENDINBLUE_API_KEY,
+    googlePassword: GOOGLE_SENDER_PASSWORD,
   };
   return Object.freeze(parsed);
 };
