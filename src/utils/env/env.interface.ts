@@ -5,4 +5,5 @@ export interface IEnv {
   baseUrl: string;
   sendinblueApiKey: string;
   googlePassword: string;
+  googleEmail: string;
 }
